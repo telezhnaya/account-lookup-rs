@@ -50,7 +50,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let block = near::rpc::get_block(Option::from(month.closest_block_height)).await?;
         let filename = "lockups/".to_owned() + &month.name + ".txt";
 
-        let res_filename = "res/".to_owned() + &month.name + ".txt";
+        let res_filename = "no_vesting/".to_owned() + &month.name + ".txt";
         let mut res_file = File::create(res_filename).expect("Can't create file");
         // let mut res_file = OpenOptions::new().append(true).open(res_filename).expect("Can't open file");
 
@@ -93,31 +93,31 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             // we track and check transfers information inside get_account_state
 
             // Contains all that we need, but it could be none or hashed
-            let vesting_info = match state.vesting_information {
-                VestingInformation::None => { "empty_vesting_info".to_string() }
-                VestingInformation::VestingHash(_) => { "vesting_hash".to_string() }
-                VestingInformation::VestingSchedule(ref s) => {
-                    format!("vesting_schedule({};{};{})",
-                            s.start_timestamp.0, s.cliff_timestamp.0, s.end_timestamp.0).to_string()
-                }
-                VestingInformation::Terminating(ref t) => {
-                    format!("vesting_terminating({};{:?})", t.unvested_amount.0, t.status)
-                }
-            };
+            // UPD: decided not to use vesting info
+            // let vesting_info = match state.vesting_information {
+            //     VestingInformation::None => { "empty_vesting_info".to_string() }
+            //     VestingInformation::VestingHash(_) => { "vesting_hash".to_string() }
+            //     VestingInformation::VestingSchedule(ref s) => {
+            //         format!("vesting_schedule({};{};{})",
+            //                 s.start_timestamp.0, s.cliff_timestamp.0, s.end_timestamp.0).to_string()
+            //     }
+            //     VestingInformation::Terminating(ref t) => {
+            //         format!("vesting_terminating({};{:?})", t.unvested_amount.0, t.status)
+            //     }
+            // };
 
             // On the one hand, it's the value from code from lockup contract
             // on the other hand, I disagree with it
             let locked_amount = state.get_locked_amount(block.timestamp).0;
             // based on accs with opened vesting info, it does not take cliff into account
 
-            let a = format!("{},{},{},{},{},{},{},{},{}\n",
+            let a = format!("{},{},{},{},{},{},{},{}\n",
                             account_id,
                             lockup_duration,
                             human_release_duration,
                             lockup_amount,
                             locked_amount,
                             human_lockup_timestamp,
-                            vesting_info,
                             termination,
                             state.owner_account_id
             );

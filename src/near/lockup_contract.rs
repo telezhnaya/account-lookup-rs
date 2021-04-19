@@ -181,7 +181,7 @@ pub enum VestingInformation {
 /// Describes the status of transactions with the staking pool contract or terminated unvesting
 /// amount withdrawal.
 #[derive(
-    BorshDeserialize, BorshSerialize, Deserialize, Serialize, PartialEq, Copy, Clone, Debug,
+BorshDeserialize, BorshSerialize, Deserialize, Serialize, PartialEq, Copy, Clone, Debug,
 )]
 #[serde(crate = "near_sdk::serde")]
 pub enum TerminationStatus {
@@ -262,18 +262,9 @@ impl LockupContract {
                         0
                     };
 
-                let unvested_amount = match &self.vesting_information {
-                    VestingInformation::VestingSchedule(vs) => self.get_unvested_amount(vs.clone(), block_timestamp),
-                    VestingInformation::Terminating(terminating) => terminating.unvested_amount,
-                    // Vesting is private, so we can assume the vesting started before lockup date.
-                    _ => U128(0),
-                };
-                return std::cmp::max(
+                return
                     unreleased_amount
-                        .saturating_sub(self.lockup_information.termination_withdrawn_tokens),
-                    unvested_amount.0,
-                )
-                .into();
+                        .saturating_sub(self.lockup_information.termination_withdrawn_tokens).into();
             }
         }
         // The entire balance is still locked before the lockup timestamp.
