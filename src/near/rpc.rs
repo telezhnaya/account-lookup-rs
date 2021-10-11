@@ -103,7 +103,6 @@ pub async fn get_account_state(account_id: String, block_height: u64) -> Result<
         // `check_transfers_vote` contract method we won't be able to
         // get proper information based on timestamp, that's why we inject
         // the `transfer_timestamp` which is phase2 timestamp
-        println!("{:?}", state.lockup_information);
         state.lockup_information.transfers_information = TransfersInformation::TransfersEnabled {
             transfers_timestamp: U64(1602614338293769340)
         };
